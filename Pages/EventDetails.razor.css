@@ -1,0 +1,94 @@
+.back-link {
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.event-details {
+    background: #fff;
+    border: 1px solid #d8dee8;
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.event-banner {
+    align-items: end;
+    background-color: #17365d;
+    background-position: center;
+    background-size: cover;
+    color: white;
+    display: flex;
+    min-height: 18rem;
+    padding: 2rem;
+}
+
+.event-banner-content {
+    align-items: end;
+    display: flex;
+    gap: 1.5rem;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.event-banner h1 {
+    color: white;
+    font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.event-banner p {
+    margin: 0 0 0.5rem;
+}
+
+.event-banner .event-actions {
+    flex: 0 0 auto;
+    justify-content: flex-end;
+    margin-left: auto;
+}
+
+.event-banner ::deep .attendance-options {
+    grid-template-columns: repeat(3, auto);
+    width: auto;
+}
+
+.event-banner ::deep .favorite-button {
+    background: rgb(255 255 255 / 90%);
+}
+
+.event-banner ::deep .favorite-button.is-favorite {
+    color: #dc3545;
+}
+
+.event-banner ::deep .attendance-button {
+    background: rgb(255 255 255 / 90%);
+}
+
+.event-date {
+    font-weight: 600;
+}
+
+.event-details-content {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    padding: 1.5rem;
+}
+
+.event-details-content h2 {
+    color: #17365d;
+    font-size: 1.25rem;
+}
+
+.event-details-content ul {
+    margin-bottom: 0;
+    padding-left: 1.25rem;
+}
+
+@media (max-width: 700px) {
+    .event-banner-content {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .event-banner .event-actions {
+        margin-left: 0;
+    }
+}

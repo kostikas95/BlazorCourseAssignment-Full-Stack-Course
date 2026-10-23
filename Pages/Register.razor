@@ -1,0 +1,68 @@
+@page "/register"
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>Register</PageTitle>
+
+<section class="registration-page">
+    <h1>Register</h1>
+    <p>Enter your name and email address to register.</p>
+
+    @if (IsSubmitted)
+    {
+        <div class="alert alert-success" role="status">
+            <h2>Details validated</h2>
+            <p>Thank you, @Registration.Name. Your registration details are valid.</p>
+            <p class="mb-0">This demo does not create or save user accounts.</p>
+        </div>
+    }
+    else
+    {
+        <EditForm Model="@Registration" OnValidSubmit="@HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label class="form-label" for="registration-name">Name</label>
+                <InputText id="registration-name"
+                           class="form-control"
+                           @bind-Value="Registration.Name"
+                           autocomplete="name" />
+                <ValidationMessage For="@(() => Registration.Name)" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="registration-email">Email</label>
+                <InputText id="registration-email"
+                           type="email"
+                           class="form-control"
+                           @bind-Value="Registration.Email"
+                           autocomplete="email" />
+                <ValidationMessage For="@(() => Registration.Email)" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Register</button>
+        </EditForm>
+    }
+</section>
+
+@code {
+    private readonly RegistrationInput Registration = new();
+    private bool IsSubmitted;
+
+    private void HandleValidSubmit()
+    {
+        IsSubmitted = true;
+    }
+
+    private sealed class RegistrationInput
+    {
+        [Required(ErrorMessage = "Please enter your name.")]
+        [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Please enter your email address.")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
+        [StringLength(254, ErrorMessage = "Email cannot be longer than 254 characters.")]
+        public string Email { get; set; } = string.Empty;
+    }
+}

@@ -1,0 +1,75 @@
+.event-card-link {
+    color: inherit;
+    display: block;
+    text-decoration: none;
+}
+
+.event-card-link h3 {
+    margin: 0;
+}
+
+.event-card {
+    background: #fff;
+    border: 1px solid #d8dee8;
+    border-radius: 0.4rem;
+    box-shadow: 0 0.1rem 0.25rem rgb(15 23 42 / 8%);
+    min-width: 0;
+    padding: 0.45rem;
+}
+
+.event-card-link:hover h3 {
+    border-color: #258cfb;
+}
+
+.event-card-link:focus-visible h3 {
+    outline: 2px solid #258cfb;
+    outline-offset: 2px;
+}
+
+.event-card > dl {
+    margin-top: 0.35rem;
+}
+
+.event-card > .event-actions {
+    margin-top: 0.35rem;
+}
+
+.event-card-compact {
+    padding: 0.3rem;
+}
+
+.event-card-compact .event-card-link h3 {
+    font-size: 0.72rem;
+    line-height: 1.15;
+}
+
+.event-card-compact > .event-actions {
+    gap: 0.2rem;
+    margin-top: 0.15rem;
+}
+
+.event-card h3 {
+    color: #17365d;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    margin: 0 0 0.35rem;
+    overflow-wrap: anywhere;
+}
+
+.event-card dl {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+}
+
+.event-card dl > div {
+    display: grid;
+    gap: 0.1rem;
+}
+
+.event-card dd {
+    color: #526174;
+    font-size: 0.72rem;
+    margin: 0;
+    overflow-wrap: anywhere;
+}

@@ -1,0 +1,123 @@
+.event-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.attendance-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.25rem;
+    width: 100%;
+}
+
+.favorite-button {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 50%;
+    color: #68778b;
+    cursor: pointer;
+    display: inline-flex;
+    height: 2.25rem;
+    justify-content: center;
+    padding: 0.35rem;
+    width: 2.25rem;
+}
+
+.favorite-button[role="img"] {
+    cursor: default;
+}
+
+.favorite-button svg {
+    fill: none;
+    height: 1.35rem;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+    width: 1.35rem;
+}
+
+.favorite-button.is-favorite {
+    color: #dc3545;
+}
+
+.favorite-button.is-favorite svg {
+    fill: currentColor;
+}
+
+.calendar-card-actions {
+    flex-wrap: nowrap;
+    gap: 0.2rem;
+}
+
+.calendar-card-actions .favorite-button[role="img"] {
+    height: 1.3rem;
+    padding: 0.1rem;
+    width: 1.3rem;
+}
+
+.calendar-card-actions .favorite-button svg {
+    height: 0.85rem;
+    width: 0.85rem;
+}
+
+.calendar-card-actions .attendance-button[role="img"] {
+    padding: 0.05rem;
+}
+
+.calendar-card-actions ::deep .attendance-icon {
+    height: 1.1rem;
+    width: 1.1rem;
+}
+
+.calendar-card-actions .attendance-button.is-selected {
+    box-shadow: 0 0 0 1px currentColor;
+}
+
+.favorite-button:focus-visible,
+.attendance-button:focus-visible {
+    outline: 2px solid #258cfb;
+    outline-offset: 2px;
+}
+
+.attendance-button {
+    align-items: center;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 0.35rem;
+    color: #526174;
+    cursor: pointer;
+    display: inline-flex;
+    flex-direction: row;
+    gap: 0.3rem;
+    justify-content: center;
+    min-height: 2.7rem;
+    min-width: 0;
+    padding: 0.25rem 0.4rem;
+    width: 100%;
+}
+
+.attendance-button[role="img"] {
+    cursor: default;
+    flex-direction: row;
+    min-height: 0;
+    padding: 0.2rem;
+    width: auto;
+}
+
+.attendance-button.is-selected {
+    border-color: currentColor;
+    background: #f1f5f9;
+    box-shadow: 0 0 0 3px currentColor;
+}
+
+.attendance-button span {
+    color: #17365d;
+    font-size: 0.78rem;
+    line-height: 1.2;
+    text-align: center;
+    white-space: normal;
+}

@@ -1,0 +1,176 @@
+﻿@page "/"
+@implements IAsyncDisposable
+@inject EventPreferences UserEventPreferences
+@inject IJSRuntime JS
+
+<PageTitle>Event calendar</PageTitle>
+
+<h1>Event calendar</h1>
+
+<p>Discover live music, technology, talks, arts, culture, and more.</p>
+
+<div class="calendar-scroll" tabindex="0" aria-label="Scrollable events calendar" @ref="calendarScroll">
+    @for (var monthOffset = 0; monthOffset < LoadedMonths; monthOffset++)
+    {
+        var monthStart = CalendarStart.AddMonths(monthOffset);
+
+        <section @key="monthStart" class="calendar-month" aria-labelledby="month-@monthStart.ToString("yyyy-MM")">
+            <h2 id="month-@monthStart.ToString("yyyy-MM")">@monthStart.ToString("MMMM yyyy")</h2>
+            <div class="calendar-grid" role="grid" aria-label="@monthStart.ToString("MMMM yyyy")">
+                @foreach (var weekday in Weekdays)
+                {
+                    <div class="calendar-weekday" role="columnheader">@weekday</div>
+                }
+
+                @for (var blankDay = 0; blankDay < (int)monthStart.DayOfWeek; blankDay++)
+                {
+                    <div @key="blankDay" class="calendar-day calendar-day-empty" role="gridcell" aria-hidden="true"></div>
+                }
+
+                @for (var dayNumber = 1; dayNumber <= DateTime.DaysInMonth(monthStart.Year, monthStart.Month); dayNumber++)
+                {
+                    var date = monthStart.AddDays(dayNumber - 1);
+                    var dayEvents = EventCatalog.OnDate(date);
+
+                    <div @key="date" class="calendar-day" role="gridcell" aria-label="@date.ToString("dddd, MMMM d")">
+                        <time class="calendar-date" datetime="@date.ToString("yyyy-MM-dd")">@dayNumber</time>
+                        @foreach (var eventItem in dayEvents)
+                        {
+                            <EventCard @key="eventItem.Id"
+                                       EventName="@eventItem.EventName"
+                                       EventId="@eventItem.Id"
+                                       Date="@eventItem.Date"
+                                       Location="@eventItem.Location"
+                                       EntryFee="@eventItem.EntryFee"
+                                       IsFavorite="UserEventPreferences.For(eventItem.Id).IsFavorite"
+                                       Attendance="UserEventPreferences.For(eventItem.Id).AttendanceStatus"
+                                       ShowDate="false"
+                                       Compact="true" />
+                        }
+                    </div>
+                }
+            </div>
+        </section>
+    }
+    @if (LoadedMonths < MaximumMonths)
+    {
+        <div class="calendar-loading-sentinel" aria-hidden="true" @ref="calendarSentinel"></div>
+        @if (calendarLoadError is null)
+        {
+            <p class="calendar-loading-message" role="status">Scroll to load more months…</p>
+        }
+        else
+        {
+            <div class="calendar-load-error" role="alert">
+                <p>@calendarLoadError</p>
+                <button class="btn btn-outline-primary" @onclick="RetryCalendarLoad">Retry</button>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="calendar-loading-message" role="status">You’ve reached the end of the calendar.</p>
+    }
+</div>
+
+@code {
+    private const int InitialMonths = 3;
+    private const int MonthsPerLoad = 2;
+    private const int MaximumMonths = 36;
+    private static readonly DateTime CalendarStart = new(DateTime.Today.Year, DateTime.Today.Month, 1);
+    private static readonly string[] Weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    private ElementReference calendarScroll;
+    private ElementReference calendarSentinel;
+    private IJSObjectReference? calendarModule;
+    private DotNetObjectReference<Home>? dotNetReference;
+    private bool observerInitialized;
+    private bool observerSetupFailed;
+    private string? calendarLoadError;
+    private int LoadedMonths = InitialMonths;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!observerInitialized && !observerSetupFailed && LoadedMonths < MaximumMonths)
+        {
+            await InitializeObserverAsync();
+        }
+    }
+
+    private async Task InitializeObserverAsync()
+    {
+        try
+        {
+            calendarModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/calendarObserver.js");
+            dotNetReference ??= DotNetObjectReference.Create(this);
+            await calendarModule.InvokeVoidAsync(
+                "observeCalendarSentinel",
+                calendarScroll,
+                calendarSentinel,
+                dotNetReference);
+            observerInitialized = true;
+            observerSetupFailed = false;
+            calendarLoadError = null;
+        }
+        catch (JSException exception)
+        {
+            observerSetupFailed = true;
+            calendarLoadError = $"More months could not be loaded. {exception.Message}";
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    [JSInvokable]
+    public async Task<bool> LoadMoreMonths()
+    {
+        if (LoadedMonths >= MaximumMonths)
+        {
+            return false;
+        }
+
+        await InvokeAsync(() =>
+        {
+            LoadedMonths = Math.Min(LoadedMonths + MonthsPerLoad, MaximumMonths);
+            StateHasChanged();
+        });
+
+        return LoadedMonths < MaximumMonths;
+    }
+
+    [JSInvokable]
+    public Task OnCalendarLoadError(string message) => InvokeAsync(() =>
+    {
+        calendarLoadError = $"More months could not be loaded. {message}";
+        StateHasChanged();
+    });
+
+    private async Task RetryCalendarLoad()
+    {
+        calendarLoadError = null;
+        if (!observerInitialized || calendarModule is null)
+        {
+            observerSetupFailed = false;
+            await InitializeObserverAsync();
+            return;
+        }
+
+        try
+        {
+            await calendarModule.InvokeVoidAsync("retryCalendarSentinel", calendarSentinel);
+        }
+        catch (JSException exception)
+        {
+            calendarLoadError = $"More months could not be loaded. {exception.Message}";
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (calendarModule is not null)
+        {
+            await calendarModule.InvokeVoidAsync("disposeCalendarSentinel", calendarSentinel);
+            await calendarModule.DisposeAsync();
+        }
+
+        dotNetReference?.Dispose();
+    }
+}

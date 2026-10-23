@@ -1,0 +1,95 @@
+<div class="event-actions @(CalendarCard ? "calendar-card-actions" : null)">
+    @if (CalendarCard)
+    {
+        @if (IsFavorite)
+        {
+            <span class="favorite-button is-favorite" role="img" aria-label="Favorite">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" />
+                </svg>
+            </span>
+        }
+
+        @if (Attendance is not null)
+        {
+            <span class="attendance-button @StatusClass(Attendance.Value) is-selected"
+                  role="img"
+                  aria-label="@StatusLabel(Attendance.Value)"
+                  title="@StatusLabel(Attendance.Value)">
+                <AttendanceIcon Status="@Attendance.Value" />
+            </span>
+        }
+    }
+    else
+    {
+        <button type="button"
+                class="favorite-button @(IsFavorite ? "is-favorite" : null)"
+                aria-label="@(IsFavorite ? "Remove from favorites" : "Add to favorites")"
+                aria-pressed="@IsFavorite"
+                title="@(IsFavorite ? "Remove from favorites" : "Add to favorites")"
+                @onclick="ToggleFavorite">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" />
+            </svg>
+        </button>
+
+        <div class="attendance-options" aria-label="Event attendance">
+            @foreach (var status in AttendanceChoices)
+            {
+                <button @key="status"
+                        type="button"
+                        class="attendance-button @StatusClass(status) @(Attendance == status ? "is-selected" : null)"
+                        aria-label="@StatusLabel(status)"
+                        aria-pressed="@(Attendance == status)"
+                        title="@StatusLabel(status)"
+                        @onclick="() => SetAttendance(status)">
+                    @if (!CalendarCard)
+                    {
+                        <span>@StatusLabel(status)</span>
+                    }
+                    <AttendanceIcon Status="@status" />
+                </button>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private static readonly AttendanceStatus[] AttendanceChoices =
+        Enum.GetValues<AttendanceStatus>();
+
+    [Parameter]
+    public bool CalendarCard { get; set; }
+
+    [Parameter]
+    public bool IsFavorite { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsFavoriteChanged { get; set; }
+
+    [Parameter]
+    public AttendanceStatus? Attendance { get; set; }
+
+    [Parameter]
+    public EventCallback<AttendanceStatus?> AttendanceChanged { get; set; }
+
+    private Task ToggleFavorite() => IsFavoriteChanged.InvokeAsync(!IsFavorite);
+
+    private Task SetAttendance(AttendanceStatus status) => AttendanceChanged.InvokeAsync(status);
+
+    private static string StatusClass(AttendanceStatus status) => status switch
+    {
+        AttendanceStatus.Attending => "attending",
+        AttendanceStatus.NotAttending => "not-attending",
+        AttendanceStatus.MaybeAttending => "maybe-attending",
+        _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
+    };
+
+    private static string StatusLabel(AttendanceStatus status) => status switch
+    {
+        AttendanceStatus.Attending => "Attending",
+        AttendanceStatus.NotAttending => "Not attending",
+        AttendanceStatus.MaybeAttending => "Maybe attending",
+        _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
+    };
+}

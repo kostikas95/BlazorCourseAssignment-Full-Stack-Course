@@ -1,0 +1,42 @@
+.attendance-icon {
+    display: block;
+    flex: 0 0 auto;
+    height: 2rem;
+    overflow: visible;
+    width: 2rem;
+}
+
+.person-head,
+.person-body {
+    fill: none;
+    stroke: #526174;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+}
+
+.status-badge {
+    fill: currentColor;
+    stroke: #fff;
+    stroke-width: 1.5;
+}
+
+.status-mark {
+    fill: none;
+    stroke: #fff;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+}
+
+.attending {
+    color: #198754;
+}
+
+.not-attending {
+    color: #dc3545;
+}
+
+.maybe-attending {
+    color: #0d6efd;
+}

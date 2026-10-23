@@ -1,0 +1,59 @@
+<article class="event-card @(Compact ? "event-card-compact" : null)">
+    <NavLink class="event-card-link"
+             href="@($"events/{Uri.EscapeDataString(EventId)}")"
+             aria-label="@($"View details for {EventName}")">
+        <h3>@EventName</h3>
+    </NavLink>
+    @if (!Compact)
+    {
+        <dl>
+            @if (ShowDate)
+            {
+                <div>
+                    <dt>Date</dt>
+                    <dd><time datetime="@Date.ToString("O")">@Date.ToString("dddd, MMMM d, yyyy")</time></dd>
+                </div>
+            }
+            <div>
+                <dt>Location</dt>
+                <dd>@Location</dd>
+            </div>
+            <div>
+                <dt>Entry fee</dt>
+                <dd>@EntryFee.ToString("C", CultureInfo.GetCultureInfo("de-DE"))</dd>
+            </div>
+        </dl>
+    }
+    <EventActions CalendarCard="true"
+                  IsFavorite="IsFavorite"
+                  Attendance="Attendance" />
+</article>
+
+@code {
+    [Parameter, EditorRequired]
+    public string EventId { get; set; } = string.Empty;
+
+    [Parameter, EditorRequired]
+    public string EventName { get; set; } = string.Empty;
+
+    [Parameter]
+    public DateTime Date { get; set; }
+
+    [Parameter]
+    public bool ShowDate { get; set; } = true;
+
+    [Parameter]
+    public bool Compact { get; set; }
+
+    [Parameter, EditorRequired]
+    public string Location { get; set; } = string.Empty;
+
+    [Parameter]
+    public decimal EntryFee { get; set; }
+
+    [Parameter]
+    public bool IsFavorite { get; set; }
+
+    [Parameter]
+    public AttendanceStatus? Attendance { get; set; }
+}

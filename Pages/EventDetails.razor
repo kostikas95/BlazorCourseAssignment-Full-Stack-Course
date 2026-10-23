@@ -1,0 +1,86 @@
+@page "/events/{EventId}"
+@using Microsoft.AspNetCore.Components
+@inject EventPreferences UserEventPreferences
+
+<PageTitle>@(EventData?.EventName ?? "Event not found")</PageTitle>
+
+<NavLink class="back-link" href="">← Back to event calendar</NavLink>
+
+@if (EventData is null)
+{
+    <h1>Event not found</h1>
+    <p>That event may have been removed or the link may be incorrect.</p>
+}
+else
+{
+    <article class="event-details">
+        <header class="event-banner" style="@($"background-image: linear-gradient(90deg, rgb(12 28 50 / 82%), rgb(12 28 50 / 15%)), url('{EventData.BackgroundImage}')")">
+            <div class="event-banner-content">
+                <div>
+                    <p class="event-date">@EventData.Date.ToString("dddd, MMMM d, yyyy")</p>
+                    <h1>@EventData.EventName</h1>
+                    <p>@EventData.Location</p>
+                </div>
+                <EventActions @bind-IsFavorite="CurrentPreference.IsFavorite"
+                              @bind-Attendance="CurrentPreference.AttendanceStatus" />
+            </div>
+        </header>
+
+        <div class="event-details-content">
+            <section aria-labelledby="about-event">
+                <h2 id="about-event">About this event</h2>
+                <p>@EventData.Description</p>
+                <p><strong>Entry fee:</strong> @EventData.EntryFee.ToString("C", CultureInfo.GetCultureInfo("de-DE"))</p>
+            </section>
+
+            <section aria-labelledby="your-response">
+                <h2 id="your-response">Your attendance</h2>
+                @if (CurrentPreference.AttendanceStatus is { } status)
+                {
+                    <p>Your response: @AttendanceLabel(status).</p>
+                }
+                else
+                {
+                    <p>You haven’t selected an attendance response yet.</p>
+                }
+            </section>
+
+            <section aria-labelledby="event-guests">
+                <h2 id="event-guests">Featured artists &amp; speakers</h2>
+                <ul>
+                    @foreach (var guest in EventData.FeaturedGuests)
+                    {
+                        <li><strong>@guest.Name</strong> <span>— @guest.Role</span></li>
+                    }
+                </ul>
+            </section>
+
+            <section aria-labelledby="event-sponsors">
+                <h2 id="event-sponsors">Sponsors</h2>
+                <ul>
+                    @foreach (var sponsor in EventData.Sponsors)
+                    {
+                        <li>@sponsor</li>
+                    }
+                </ul>
+            </section>
+        </div>
+    </article>
+}
+
+@code {
+    [Parameter]
+    public string EventId { get; set; } = string.Empty;
+
+    private PublicEvent? EventData => Models.EventCatalog.FindById(EventId);
+
+    private EventPreference CurrentPreference => UserEventPreferences.For(EventId);
+
+    private static string AttendanceLabel(AttendanceStatus status) => status switch
+    {
+        AttendanceStatus.Attending => "Attending",
+        AttendanceStatus.MaybeAttending => "Maybe attending",
+        AttendanceStatus.NotAttending => "Not attending",
+        _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
+    };
+}
