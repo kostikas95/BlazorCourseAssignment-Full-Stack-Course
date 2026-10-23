@@ -22,7 +22,8 @@ else
                     <p>@EventData.Location</p>
                 </div>
                 <EventActions @bind-IsFavorite="CurrentPreference.IsFavorite"
-                              @bind-Attendance="CurrentPreference.AttendanceStatus" />
+                              Attendance="CurrentPreference.AttendanceStatus"
+                              AttendanceChanged="UpdateAttendance" />
             </div>
         </header>
 
@@ -31,6 +32,11 @@ else
                 <h2 id="about-event">About this event</h2>
                 <p>@EventData.Description</p>
                 <p><strong>Entry fee:</strong> @EventData.EntryFee.ToString("C", CultureInfo.GetCultureInfo("de-DE"))</p>
+            </section>
+
+            <section aria-labelledby="event-attendance">
+                <h2 id="event-attendance">Event attendance</h2>
+                <p class="attendee-count">@AttendeeCountText</p>
             </section>
 
             <section aria-labelledby="your-response">
@@ -75,6 +81,21 @@ else
     private PublicEvent? EventData => Models.EventCatalog.FindById(EventId);
 
     private EventPreference CurrentPreference => UserEventPreferences.For(EventId);
+
+    private string AttendeeCountText
+    {
+        get
+        {
+            var count = UserEventPreferences.AttendingCountFor(EventId);
+            return $"{count} {(count == 1 ? "person" : "people")} will attend";
+        }
+    }
+
+    private Task UpdateAttendance(AttendanceStatus? status)
+    {
+        UserEventPreferences.SetAttendance(EventId, status);
+        return Task.CompletedTask;
+    }
 
     private static string AttendanceLabel(AttendanceStatus status) => status switch
     {

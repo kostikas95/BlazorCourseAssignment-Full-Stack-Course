@@ -24,6 +24,7 @@
             </div>
         </dl>
     }
+    <p class="attendee-count">@AttendeeCountText</p>
     <EventActions CalendarCard="true"
                   IsFavorite="IsFavorite"
                   Attendance="Attendance" />
@@ -52,8 +53,14 @@
     public decimal EntryFee { get; set; }
 
     [Parameter]
+    public int AttendingCount { get; set; }
+
+    [Parameter]
     public bool IsFavorite { get; set; }
 
     [Parameter]
     public AttendanceStatus? Attendance { get; set; }
+
+    private string AttendeeCountText =>
+        $"{AttendingCount} {(AttendingCount == 1 ? "person" : "people")} will attend";
 }

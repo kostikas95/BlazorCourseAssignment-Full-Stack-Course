@@ -16,4 +16,13 @@ public sealed class EventPreferences
 
         return preference;
     }
+
+    public int AttendingCountFor(string eventId) =>
+        preferences.TryGetValue(eventId, out var preference)
+        && preference.AttendanceStatus == AttendanceStatus.Attending
+            ? 1
+            : 0;
+
+    public void SetAttendance(string eventId, AttendanceStatus? status) =>
+        For(eventId).AttendanceStatus = status;
 }

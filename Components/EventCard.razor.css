@@ -34,6 +34,12 @@
     margin-top: 0.35rem;
 }
 
+.event-card > .attendee-count {
+    color: #526174;
+    font-size: 0.72rem;
+    margin: 0.35rem 0 0;
+}
+
 .event-card-compact {
     padding: 0.3rem;
 }
@@ -46,6 +52,11 @@
 .event-card-compact > .event-actions {
     gap: 0.2rem;
     margin-top: 0.15rem;
+}
+
+.event-card-compact > .attendee-count {
+    font-size: 0.65rem;
+    margin-top: 0.2rem;
 }
 
 .event-card h3 {

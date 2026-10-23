@@ -42,6 +42,7 @@
                                        Date="@eventItem.Date"
                                        Location="@eventItem.Location"
                                        EntryFee="@eventItem.EntryFee"
+                                       AttendingCount="UserEventPreferences.AttendingCountFor(eventItem.Id)"
                                        IsFavorite="UserEventPreferences.For(eventItem.Id).IsFavorite"
                                        Attendance="UserEventPreferences.For(eventItem.Id).AttendanceStatus"
                                        ShowDate="false"
